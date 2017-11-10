@@ -1,0 +1,9 @@
+{% load i18n admin_list_tags staticfiles %}<div class="form__group">
+    <div class="form__control">
+        {% if value %}
+            <img src="{{value.url}}" alt="" style="max-width: 100%;">
+        {% else %}
+            <p>{% trans "No photo uploaded" %}</p>
+        {% endif %}
+    </div>
+</div>
