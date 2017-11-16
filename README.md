@@ -19,7 +19,8 @@ INSTALLED_APPS=[
 ```
 
 ```python
-STRIPE_SECRET_KEY = "****"
+PINAX_STRIPE_PUBLIC_KEY = "****",
+PINAX_STRIPE_SECRET_KEY = "****"
 ```
 
 ## URLs

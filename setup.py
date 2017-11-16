@@ -32,7 +32,7 @@ setup(
     namespace_packages=['cotidia'],
     include_package_data=True,
     install_requires=[
-        'stripe>=1.73'
+        'pinax-stripe>=3.4'
     ],
     classifiers=[
         'Framework :: Django',

@@ -25,6 +25,7 @@ DEFAULT_SETTINGS = dict(
         "cotidia.admin",
         "cotidia.mail",
         "cotidia.account",
+        "pinax.stripe",
         "cotidia.stripe",
         "rest_framework",
         "rest_framework.authtoken",
@@ -60,13 +61,27 @@ DEFAULT_SETTINGS = dict(
     SITE_ID=1,
     SITE_URL="http://localhost:8000",
     APP_URL="http://localhost:8000",
-    ROOT_URLCONF="cotidia.testimonial.tests.urls",
+    ROOT_URLCONF="cotidia.stripe.tests.urls",
     SECRET_KEY="notasecret",
     AUTH_USER_MODEL="account.User",
     AUTHENTICATION_BACKENDS=[
         'cotidia.account.auth.EmailBackend',
     ],
-    STATIC_URL='/static/'
+    STATIC_URL='/static/',
+    REST_FRAMEWORK={
+        'DEFAULT_PERMISSION_CLASSES': [
+            'rest_framework.permissions.IsAuthenticated',
+        ],
+        'DEFAULT_AUTHENTICATION_CLASSES': [
+            'rest_framework.authentication.TokenAuthentication',
+            'rest_framework.authentication.SessionAuthentication'
+        ],
+        'DEFAULT_RENDERER_CLASSES': [
+            'rest_framework.renderers.JSONRenderer',
+        ]
+    },
+    PINAX_STRIPE_PUBLIC_KEY="pk_test_ANMXjT2AOtS75eHUNXPShNfv",
+    PINAX_STRIPE_SECRET_KEY="sk_test_a7ZFJpKdk8hR53q6YdwVSd9h"
 )
 
 
