@@ -62,16 +62,6 @@ class SubscribeAPITests(APITestCase):
         customer = Customer.objects.get(user=self.normal_user)
         self.assertTrue(subscriptions.has_active_subscription(customer))
 
-        # # With authentication
-        # self.client.credentials(
-        #     HTTP_AUTHORIZATION='Token ' + self.normal_user_token.key)
-
-        # response = self.client.post(url, data, format='json')
-        # self.assertEqual(response.status_code, status.HTTP_200_OK)
-        # self.assertEquals(response.data['first_name'], "Jack")
-        # self.assertEquals(response.data['last_name'], "Green")
-        # self.assertEquals(response.data['email'], "john@green.com")
-
         if self.display_doc:
             # Generate documentation
             content = {
