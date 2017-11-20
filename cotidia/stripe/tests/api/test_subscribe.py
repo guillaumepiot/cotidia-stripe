@@ -24,6 +24,8 @@ class SubscribeAPITests(APITestCase):
     def setUp(self):
         self.doc = Doc()
 
+        plans.sync_plans()
+
         next_year = datetime.datetime.now() + datetime.timedelta(days=365)
         next_year = next_year.strftime("%Y")
 
@@ -50,7 +52,6 @@ class SubscribeAPITests(APITestCase):
 
         data = {
             'plan_id': "MF-MONTHLY",
-
         }
         data.update(self.card)
 
@@ -79,8 +80,6 @@ class SubscribeAPITests(APITestCase):
 
     def test_subscribe_update(self):
         """Test update a subscription."""
-
-        plans.sync_plans()
 
         customer = customers.create(
             user=self.normal_user
@@ -132,5 +131,147 @@ class SubscribeAPITests(APITestCase):
             self.doc.display_section(content)
 
     def test_subscription_valid(self):
-        # @TODO: test that the plan id is valid
-        pass
+        """Test plan validation."""
+
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + self.normal_user_token.key
+        )
+
+        data = {
+            'plan_id': "UNKNOWN",
+        }
+        data.update(self.card)
+
+        url = reverse('stripe-api:subscription-create')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data["non_field_errors"],
+            ['No such plan: UNKNOWN']
+        )
+
+    def test_subscription_card_declined(self):
+        """Test card declined."""
+
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + self.normal_user_token.key
+        )
+
+        data = {
+            'plan_id': "MF-MONTHLY",
+        }
+        data.update(self.card)
+        data['card_number'] = "4000000000000002"
+
+        url = reverse('stripe-api:subscription-create')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data["non_field_errors"],
+            ['Your card was declined.']
+        )
+
+    def test_subscription_card_expired(self):
+        """Test card expired."""
+
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + self.normal_user_token.key
+        )
+
+        data = {
+            'plan_id': "MF-MONTHLY",
+        }
+        data.update(self.card)
+        data['card_number'] = "4000000000000069"
+
+        url = reverse('stripe-api:subscription-create')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data["non_field_errors"],
+            ['Your card has expired.']
+        )
+
+    def test_subscription_card_incorrect_number(self):
+        """Test card number invalid."""
+
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + self.normal_user_token.key
+        )
+
+        data = {
+            'plan_id': "MF-MONTHLY",
+        }
+        data.update(self.card)
+        data['card_number'] = "4242424242424241"
+
+        url = reverse('stripe-api:subscription-create')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data["non_field_errors"],
+            ['Your card number is incorrect.']
+        )
+
+    def test_subscription_card_invalid_month(self):
+        """Test card expiry month invalid."""
+
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + self.normal_user_token.key
+        )
+
+        data = {
+            'plan_id': "MF-MONTHLY",
+        }
+        data.update(self.card)
+        data['card_exp_month'] = "13"
+
+        url = reverse('stripe-api:subscription-create')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data["non_field_errors"],
+            ["Your card's expiration month is invalid."]
+        )
+
+    def test_subscription_card_invalid_year(self):
+        """Test card expiry year invalid."""
+
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + self.normal_user_token.key
+        )
+
+        data = {
+            'plan_id': "MF-MONTHLY",
+        }
+        data.update(self.card)
+        data['card_exp_year'] = "1970"
+
+        url = reverse('stripe-api:subscription-create')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data["non_field_errors"],
+            ["Your card's expiration year is invalid."]
+        )
+
+    def test_subscription_card_invalid_cvc(self):
+        """Test card cvc invalid."""
+
+        self.client.credentials(
+            HTTP_AUTHORIZATION='Token ' + self.normal_user_token.key
+        )
+
+        data = {
+            'plan_id': "MF-MONTHLY",
+        }
+        data.update(self.card)
+        data['card_cvc'] = "99"
+
+        url = reverse('stripe-api:subscription-create')
+        response = self.client.post(url, data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertEqual(
+            response.data["non_field_errors"],
+            ["Your card's security code is invalid."]
+        )
