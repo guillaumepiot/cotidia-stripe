@@ -4,6 +4,9 @@ from cotidia.stripe.views import api
 
 ure = r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
 
+
+app_name = 'cotidia.stripe'
+
 urlpatterns = [
     url(
         r'^subscription/create$',
