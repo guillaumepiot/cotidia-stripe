@@ -60,6 +60,7 @@ DEFAULT_SETTINGS = dict(
     },
     SITE_ID=1,
     SITE_URL="http://localhost:8000",
+    SITE_NAME="Test Stripe",
     APP_URL="http://localhost:8000",
     ROOT_URLCONF="cotidia.stripe.tests.urls",
     SECRET_KEY="notasecret",

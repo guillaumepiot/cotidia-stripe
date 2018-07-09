@@ -23,6 +23,22 @@ PINAX_STRIPE_PUBLIC_KEY = "****",
 PINAX_STRIPE_SECRET_KEY = "****"
 ```
 
+Context processor:
+
+```python
+TEMPLATES = [
+    {
+        ...
+        'OPTIONS': {
+            'context_processors': [
+                ...
+                'cotidia.stripe.context_processor.stripe_settings',
+            ],
+        },
+    },
+]
+```
+
 ## URLs
 
 Add `stripe-admin`, `stripe-api` and `stripe-public` to the URLs:
