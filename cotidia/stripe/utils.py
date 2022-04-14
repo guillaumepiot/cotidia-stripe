@@ -36,3 +36,9 @@ def stripe_charge():
     return stripe.Charge
 
 stripe_charge = stripe_charge()
+
+def stripe_payment_intent():
+    stripe.api_key = settings.STRIPE_SECRET_KEY
+    return stripe.PaymentIntent
+
+stripe_payment_intent = stripe_payment_intent()
